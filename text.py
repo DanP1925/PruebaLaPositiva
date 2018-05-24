@@ -1,3 +1,6 @@
 firstTime = "Hola amigo positivo B) Me alegra conocerte!"
 multipleTimes = "Hola, que bueno volver a verte :D"
 onlyTextMessage = "Disculpa pero por ahora solo leo texto :)"
+whatCanIDoForYou = "¿En que puedo ayudarte?"
+findSong = "Buscar cancion"
+displayMySongs = "Ver canciones"

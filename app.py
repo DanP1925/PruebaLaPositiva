@@ -2,6 +2,7 @@ from dblibrary import DbLibrary
 import text
 from flask import Flask, request
 from pymessenger.bot import Bot
+from pymessenger import Button
 
 app = Flask(__name__)
 ACCESS_TOKEN = 'EAAGXBJKgLyoBAAQiWhtEQwbwYP2VsWXtpNZBg87vsPoB7U9VU6ZB0748kUbKyiGs4GbZCiQvTSE6exxEUJBjIRwtUZBSZAeiB06KJXAc3tyul1MsQRZAmoL9TCRO3ayo1tnka6ReS0GN60TlxEQWUSX7lkrPLYbiaWBbj707ajpwZDZD'
@@ -29,6 +30,8 @@ def receive_message():
                             db_tools.createNewAccount(recipient_id,timestamp)
                         else:
                             send_message(recipient_id,text.multipleTimes)
+                            send_option_message(recipient_id,text.whatCanIDoForYou,
+                                                [text.findSong,text.displayMySongs])
                         db_tools.storeMessage(recipient_id,messageText,timestamp)
                         db_tools.close()
                     if message['message'].get('attachments'):
@@ -42,6 +45,14 @@ def verify_fb_token(token_sent):
 
 def send_message(recipient_id, response):
     bot.send_text_message(recipient_id,response)
+    return "success"
+
+def send_option_message(recipient_id, response, options):
+    buttons = []
+    for element in options:
+        button = Button(title=element ,type='postback', payload='other')
+        buttons.append(button)
+    bot.send_button_message(recipient_id,response,buttons)
     return "success"
 
 if __name__ == '__main__':
