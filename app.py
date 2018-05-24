@@ -21,16 +21,18 @@ def receive_message():
                 if message.get('message'):
                     recipient_id = message['sender']['id']
                     timestamp = message['timestamp']
-                    if message['message'].get('text'):
+                    messageText = message['message'].get('text')
+                    if messageText:
                         db_tools = DbLibrary() 
                         if db_tools.isFirstTime(recipient_id):
                             send_message(recipient_id,text.firstTime)
                             db_tools.createNewAccount(recipient_id,timestamp)
                         else:
                             send_message(recipient_id,text.multipleTimes)
+                        db_tools.storeMessage(recipient_id,messageText,timestamp)
                         db_tools.close()
                     if message['message'].get('attachments'):
-                        send_message(recipient_id, text.onlyTextMessage)
+                        send_message(recipient_id,text.onlyTextMessage)
     return "MessageProcessed"
 
 def verify_fb_token(token_sent):
