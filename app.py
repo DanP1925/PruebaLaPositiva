@@ -1,3 +1,5 @@
+from dblibrary import DbLibrary
+import text
 from flask import Flask, request
 from pymessenger.bot import Bot
 
@@ -18,12 +20,16 @@ def receive_message():
             for message in messaging:
                 if message.get('message'):
                     recipient_id = message['sender']['id']
+                    timestamp = message['timestamp']
                     if message['message'].get('text'):
-                        response_sent_text = "Hello World B) !"
-                        send_message(recipient_id,response_sent_text)
+                        db_tools = DbLibrary() 
+                        if db_tools.isFirstTime(recipient_id):
+                            send_message(recipient_id,text.firstTime)
+                        else:
+                            send_message(recipient_id,text.multipleTimes)
+                        db_tools.close()
                     if message['message'].get('attachments'):
-                        response_sent_nontext = "Hola Mundo :v !"
-                        send_message(recipient_id, response_sent_nontext)
+                        send_message(recipient_id, text.onlyTextMessage)
     return "MessageProcessed"
 
 def verify_fb_token(token_sent):
