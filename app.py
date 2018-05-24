@@ -36,6 +36,12 @@ def receive_message():
                         db_tools.close()
                     if message['message'].get('attachments'):
                         send_message(recipient_id,text.onlyTextMessage)
+                elif message.get('postback'):
+                    option = message['postback'].get('title')
+                    if option == text.findSong:
+                        print("Buscar canciones")
+                    elif option == text.displayMySongs:
+                        print("Muestrame mis canciones")
     return "MessageProcessed"
 
 def verify_fb_token(token_sent):
