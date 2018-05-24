@@ -25,6 +25,7 @@ def receive_message():
                         db_tools = DbLibrary() 
                         if db_tools.isFirstTime(recipient_id):
                             send_message(recipient_id,text.firstTime)
+                            db_tools.createNewAccount(recipient_id,timestamp)
                         else:
                             send_message(recipient_id,text.multipleTimes)
                         db_tools.close()

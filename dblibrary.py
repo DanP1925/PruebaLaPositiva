@@ -1,4 +1,5 @@
 import psycopg2
+from datetime import datetime
 
 class DbLibrary:
 
@@ -17,9 +18,9 @@ class DbLibrary:
 
     def isFirstTime(self, facebook_id):
         cur = self.conn.cursor()
-        cur.execute("SELECT * " +
-                    "FROM account " +
-                    "WHERE facebook_id = %s" % facebook_id);
+        query = "SELECT * FROM account WHERE facebook_id = %s"
+        data = (facebook_id, )
+        cur.execute(query,data);
 
         if cur.fetchone() is not None:
             result = False
@@ -31,7 +32,10 @@ class DbLibrary:
 
     def createNewAccount(self, facebook_id, created_time):
         cur = self.conn.cursor()
-        cur.execute("INSERT INTO account (facebook_id,created_at,last_access) " +
-                    "VALUES (%s, %s, $s)" % (facebook_id,created_time,created_time))  
+        query = "INSERT INTO account (facebook_id,created_at,last_access) VALUES (%s, %s, %s)"
+        data = (facebook_id,
+                datetime.fromtimestamp(created_time/1000.0),
+                datetime.fromtimestamp(created_time/1000.0)) 
+        cur.execute(query,data) 
         self.conn.commit()
         cur.close()
