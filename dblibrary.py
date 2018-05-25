@@ -87,3 +87,11 @@ class DbLibrary:
         result = cur.fetchone()[0]
         cur.close()
         return result
+
+    def getMessageNumberPerDay(self):
+        cur = self.conn.cursor()
+        query = "select count(account.id), date_trunc('day', message.send_at) as daySent from account inner join message on account.id = message.account_id group by daySent order by daysent desc limit 10"
+        cur.execute(query) 
+        result = cur.fetchall()
+        cur.close()
+        return result

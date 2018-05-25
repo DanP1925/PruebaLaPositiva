@@ -3,6 +3,7 @@ from flask import Flask, request
 from messenger import Messenger
 from musixmatch import MusixMatch
 import const
+from datetime import datetime
 import text
 
 app = Flask(__name__)
@@ -63,22 +64,25 @@ def receive_message():
                     db_tools.storeMessage(recipient_id,option,timestamp)
                     updateState(db_tools,recipient_id,option)
                     current_state = db_tools.getConversationState(recipient_id)
+                    # Search Songs
                     if (current_state == const.findSong):
                         askHowToFind(db_tools,messenger,recipient_id)
-                    elif (current_state == const.displayReport):
-                        askWhichReport(db_tools,messenger,recipient_id)
                     elif (current_state == const.byAuthor):
                         messenger.send_message(recipient_id,text.inputWords)
                     elif (current_state == const.byTitle):
                         messenger.send_message(recipient_id,text.inputWords)
                     elif (current_state == const.byLyric):
                         messenger.send_message(recipient_id,text.inputWords)
+                    # My Songs
                     elif (current_state == const.showMySongs):
                         print("wp")
+                    # Reports
+                    elif (current_state == const.displayReport):
+                        askWhichReport(db_tools,messenger,recipient_id)
                     elif (current_state == const.personsReport):
                         getNumberOfUsers(db_tools,messenger,recipient_id)
                     elif (current_state == const.chatsReport):
-                        print("chat")
+                        getChatsPerDay(db_tools,messenger,recipient_id)
                     elif (current_state == const.songReport):
                         print("song")
 
@@ -144,7 +148,14 @@ def getNumberOfUsers(db_tools,messenger,recipient_id):
     numberOfUser = db_tools.getNumberOfUsers()
     messenger.send_message(recipient_id,text.resultPersonsReport + 
                             str(numberOfUser) + text.resultPersonsReport2)
-    db_tools.updateConversationState(recipient_id,const.resultPersonsReport)
+    db_tools.updateConversationState(recipient_id,const.greeting)
+
+def getChatsPerDay(db_tools,messenger,recipient_id):
+    topChats = db_tools.getMessageNumberPerDay()
+    for chat in topChats:
+        messenger.send_message(recipient_id, text.resultChatReport + str(datetime.date(chat[1]))
+                                + text.resultChatReport2 + str(chat[0]) + text.resultChatReport3)
+    db_tools.updateConversationState(recipient_id,const.greeting)
 
 if __name__ == '__main__':
     app.run()
