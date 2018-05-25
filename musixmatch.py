@@ -6,27 +6,49 @@ class MusixMatch:
     api_key = "fbeaa24a48f870317f20e625f3e0db73"
 
     def getSongWithTitle(self,title):
-        parameters = {"q_track": str(title),"apikey": api_key}
+        parameters = {"q_track": str(title),"apikey": self.api_key}
         response = requests.get("http://api.musixmatch.com/ws/1.1/track.search?page_size=1&page=1&s_track_rating=desc",params=parameters)
-        return self.getTrackIdFromResponse(response)
+        title = self.getTitleSong(response)
+        track_id = self.getTrackIdFromResponse(response)
+        return title, track_id
 
     def getSongWithAuthor(self, artist):
-        parameters = {"q_artist": str(artist),"apikey": api_key}
+        parameters = {"q_artist": str(artist),"apikey": self.api_key}
         response = requests.get("http://api.musixmatch.com/ws/1.1/track.search?page_size=1&page=1&s_track_rating=desc",params=parameters)
-        return self.getTrackIdFromResponse(response)
+        title = self.getTitleSong(response)
+        track_id = self.getTrackIdFromResponse(response)
+        return title, track_id
 
     def getSongWithLyrics(self, lyrics):
-        parameters = {"q_lyrics": str(lyrics),"apikey": api_key}
+        parameters = {"q_lyrics": str(lyrics),"apikey": self.api_key}
         response = requests.get("http://api.musixmatch.com/ws/1.1/track.search?page_size=1&page=1&s_track_rating=desc",params=parameters)
-        return self.getTrackIdFromResponse(response) 
+        title = self.getTitleSong(response)
+        track_id = self.getTrackIdFromResponse(response)
+        return title, track_id
+
+    def getTitleSong(self,response):
+        parsed = json.loads(response.content.decode('utf-8'))
+        if (len(parsed['message']['body']['track_list']) != 0):
+            title = parsed['message']['body']['track_list'][0]['track']['track_name']
+            author = parsed['message']['body']['track_list'][0]['track']['artist_name']
+            return (title + ' - ' + author)
+        else:
+            return None
 
     def getTrackIdFromResponse(self,response):
         parsed = json.loads(response.content.decode('utf-8'))
-        track_id = parsed['message']['body']['track_list'][0]['track']['track_id']
-        return track_id
+        if (len(parsed['message']['body']['track_list']) != 0):
+            track_id = parsed['message']['body']['track_list'][0]['track']['track_id']
+            return track_id
+        else:
+            return None
 
     def getLyricsWithSong(self,track_id):
-        parameters = {"track_id": str(track_id),"apikey": api_key}
-        response = requests.get("http://api.musixmatch.com/ws/1.1/track.lyrics.get?",params=parameters2)
+        parameters = {"track_id": str(track_id),"apikey": self.api_key}
+        response = requests.get("http://api.musixmatch.com/ws/1.1/track.lyrics.get?",params=parameters)
         parsed = json.loads(response.content.decode('utf-8'))
-        return parsed['message']['body']['lyrics']['lyrics_body']
+        print(parsed)
+        if (len(parsed['message']['body']) != 0):
+            return parsed['message']['body']['lyrics']['lyrics_body']
+        else:
+            return None 

@@ -52,13 +52,11 @@ class DbLibrary:
         cur.close()
         return account_id
 
-
     def storeMessage(self, facebook_id, messageText, created_time): 
         account_id = self.getAccountId(facebook_id)
         cur = self.conn.cursor()
         query = "INSERT INTO message (account_id,body,send_at) VALUES (%s, %s, %s)"
-        data = (account_id,
-                messageText,
+        data = (account_id, messageText,
                 self.convertFbTimestampToDate(created_time))
         cur.execute(query,data) 
         self.conn.commit()
@@ -66,3 +64,18 @@ class DbLibrary:
 
     def updateConversationState(self, facebook_id, state):
         account_id = self.getAccountId(facebook_id)
+        cur = self.conn.cursor()
+        query = "UPDATE account SET conversation_state = %s WHERE id = %s"
+        data = (state, account_id)
+        cur.execute(query,data) 
+        self.conn.commit()
+        cur.close()
+
+    def getConversationState(self, facebook_id):
+        cur = self.conn.cursor()
+        query = "SELECT conversation_state FROM account WHERE facebook_id = %s"
+        data = (facebook_id, )
+        cur.execute(query,data) 
+        conversation_state = cur.fetchone()[0]
+        cur.close()
+        return conversation_state
