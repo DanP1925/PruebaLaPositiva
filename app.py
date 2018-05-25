@@ -34,6 +34,8 @@ def receive_message():
                             current_state = db_tools.getConversationState(recipient_id)
                             if (current_state == const.findSong):
                                 askHowToFind(db_tools,messenger,recipient_id)
+                            elif (current_state == const.displayReport):
+                                askWhichReport(db_tools,messenger,recipient_id)
                             elif (current_state == const.byAuthor):
                                 title, track_id = musixmatch.getSongWithAuthor(messageText)
                                 foundSong(db_tools,messenger,musixmatch,
@@ -48,8 +50,6 @@ def receive_message():
                                         recipient_id,title,track_id)
                             elif (current_state == const.showMySongs):
                                 print("wp")
-                            elif (current_state == const.displayReport):
-                                print("ez")
                             else:
                                 returningVisitor(messenger,recipient_id)
 
@@ -65,6 +65,8 @@ def receive_message():
                     current_state = db_tools.getConversationState(recipient_id)
                     if (current_state == const.findSong):
                         askHowToFind(db_tools,messenger,recipient_id)
+                    elif (current_state == const.displayReport):
+                        askWhichReport(db_tools,messenger,recipient_id)
                     elif (current_state == const.byAuthor):
                         messenger.send_message(recipient_id,text.inputWords)
                     elif (current_state == const.byTitle):
@@ -73,8 +75,13 @@ def receive_message():
                         messenger.send_message(recipient_id,text.inputWords)
                     elif (current_state == const.showMySongs):
                         print("wp")
-                    elif (current_state == const.displayReport):
-                        print("ez")
+                    elif (current_state == const.personsReport):
+                        getNumberOfUsers(db_tools,messenger,recipient_id)
+                    elif (current_state == const.chatsReport):
+                        print("chat")
+                    elif (current_state == const.songReport):
+                        print("song")
+
 
                 db_tools.close()
     return "MessageProcessed"
@@ -86,7 +93,6 @@ def firstTimeVisitor(db_tools,messenger,recipient_id, timestamp):
         [text.findSong,text.displayMySongs,text.displayReport])
 
 def askHowToFind(db_tools,messenger,recipient_id):
-    print("bye")
     messenger.send_option_message(recipient_id,text.howToFind,
         [text.byAuthor,text.byTitle,text.byLyric])
     db_tools.updateConversationState(recipient_id,const.howToFind)
@@ -110,6 +116,10 @@ def returningVisitor(messenger,recipient_id):
     messenger.send_option_message(recipient_id,text.whatCanIDoForYou,
         [text.findSong,text.displayMySongs,text.displayReport])
 
+def askWhichReport(db_tools,messenger,recipient_id):
+    messenger.send_option_message(recipient_id,text.whichReport,
+        [text.personsReport,text.chatsReport,text.songsReport])
+
 def updateState(db_tools,recipient_id,option):
     if option == text.findSong:
         db_tools.updateConversationState(recipient_id,const.findSong)
@@ -123,6 +133,18 @@ def updateState(db_tools,recipient_id,option):
         db_tools.updateConversationState(recipient_id,const.byTitle)
     elif option == text.byLyric:
         db_tools.updateConversationState(recipient_id,const.byLyric)
+    elif option == text.personsReport:
+        db_tools.updateConversationState(recipient_id,const.personsReport)
+    elif option == text.chatsReport:
+        db_tools.updateConversationState(recipient_id,const.chatsReport)
+    elif option == text.songsReport:
+        db_tools.updateConversationState(recipient_id,const.songsReport)
+
+def getNumberOfUsers(db_tools,messenger,recipient_id):
+    numberOfUser = db_tools.getNumberOfUsers()
+    messenger.send_message(recipient_id,text.resultPersonsReport + 
+                            str(numberOfUser) + text.resultPersonsReport2)
+    db_tools.updateConversationState(recipient_id,const.resultPersonsReport)
 
 if __name__ == '__main__':
     app.run()

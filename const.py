@@ -6,3 +6,6 @@ howToFind = 5
 byAuthor = 6
 byTitle = 7
 byLyric = 8
+personsReport = 9
+chatsReport = 10
+songReport = 11

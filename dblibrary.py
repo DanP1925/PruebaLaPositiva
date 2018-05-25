@@ -79,3 +79,11 @@ class DbLibrary:
         conversation_state = cur.fetchone()[0]
         cur.close()
         return conversation_state
+
+    def getNumberOfUsers(self):
+        cur = self.conn.cursor()
+        query = "SELECT count(id) FROM account"
+        cur.execute(query) 
+        result = cur.fetchone()[0]
+        cur.close()
+        return result
