@@ -59,7 +59,7 @@ def receive_message():
                                 db_tools.updateConversationState(recipient_id,const.addFavorite)
                             # My Songs
                             elif (current_state == const.showMySongs):
-                                print("wp")
+                                showSongs(db_tools,messenger,recipient_id)
                             # Reports
                             elif (current_state == const.displayReport):
                                 askWhichReport(db_tools,messenger,recipient_id)
@@ -96,7 +96,7 @@ def receive_message():
                         
                     # My Songs
                     elif (current_state == const.showMySongs):
-                        print("wp")
+                        showSongs(db_tools,messenger,recipient_id)
                     # Reports
                     elif (current_state == const.displayReport):
                         askWhichReport(db_tools,messenger,recipient_id)
@@ -180,6 +180,15 @@ def getChatsPerDay(db_tools,messenger,recipient_id):
     for chat in topChats:
         messenger.send_message(recipient_id, text.resultChatReport + str(datetime.date(chat[1]))
                                 + text.resultChatReport2 + str(chat[0]) + text.resultChatReport3)
+    db_tools.updateConversationState(recipient_id,const.greeting)
+
+def showSongs(db_tools,messenger,recipient_id):
+    mySongs = db_tools.getMyTopSongs(recipient_id)
+    i = 1
+    for song in mySongs:
+        fullMessage = str(i) + ". " + song[1] + song[2]
+        messenger.send_message(recipient_id,fullMessage) 
+        i+=1
     db_tools.updateConversationState(recipient_id,const.greeting)
 
 if __name__ == '__main__':

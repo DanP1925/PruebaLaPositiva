@@ -110,9 +110,20 @@ class DbLibrary:
     def updateFavoriteSong(self,facebook_id):
         account_id = self.getAccountId(facebook_id)
         cur = self.conn.cursor()
-        query = "UPDATE song SET is_favorite = 'Y' WHERE id = (select id from song where account_id = %s order by created_at desc limit 1)"
+        query = "UPDATE song SET is_favorite = 'Y' WHERE track_id = (select track_id from song where account_id = %s order by created_at desc limit 1)"
         data = (account_id, )
         cur.execute(query,data) 
         self.conn.commit()
         cur.close()
+
+    def getMyTopSongs(self, facebook_id):
+        account_id = self.getAccountId(facebook_id)
+        cur = self.conn.cursor()
+        query = "SELECT count(track_id) as frec, title, author FROM song WHERE account_id = %s and is_favorite='Y' group by track_id, title, author order by frec desc"
+        data = (account_id, )
+        cur.execute(query,data) 
+        result = cur.fetchall()
+        cur.close()
+        return result
+
 
