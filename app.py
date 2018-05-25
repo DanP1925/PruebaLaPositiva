@@ -40,14 +40,23 @@ def receive_message():
                                 title, author, track_id = musixmatch.getSongWithAuthor(messageText)
                                 foundSong(db_tools,messenger,musixmatch,
                                         recipient_id,title,author,track_id,timestamp)
+                                messenger.send_option_message(recipient_id,text.addFavorites,
+                                        [text.yes,text.no])
+                                db_tools.updateConversationState(recipient_id,const.addFavorite)
                             elif (current_state == const.byTitle):
                                 title, author, track_id = musixmatch.getSongWithTitle(messageText)
                                 foundSong(db_tools,messenger,musixmatch,
                                         recipient_id,title,author,track_id,timestamp)
+                                messenger.send_option_message(recipient_id,text.addFavorites,
+                                        [text.yes,text.no])
+                                db_tools.updateConversationState(recipient_id,const.addFavorite)
                             elif (current_state == const.byLyric):
                                 title, author, track_id = musixmatch.getSongWithLyrics(messageText)
                                 foundSong(db_tools,messenger,musixmatch,
                                         recipient_id,title,author,track_id,timestamp)
+                                messenger.send_option_message(recipient_id,text.addFavorites,
+                                        [text.yes,text.no])
+                                db_tools.updateConversationState(recipient_id,const.addFavorite)
                             # My Songs
                             elif (current_state == const.showMySongs):
                                 print("wp")
@@ -77,6 +86,14 @@ def receive_message():
                         messenger.send_message(recipient_id,text.inputWords)
                     elif (current_state == const.byLyric):
                         messenger.send_message(recipient_id,text.inputWords)
+                    elif (current_state == const.yes):
+                        db_tools.updateFavoriteSong(recipient_id)
+                        messenger.send_message(recipient_id,"Listo")
+                        db_tools.updateConversationState(recipient_id,const.greeting)
+                    elif (current_state == const.no):
+                        messenger.send_message(recipient_id,"Para la proxima sera :)")
+                        db_tools.updateConversationState(recipient_id,const.greeting)
+                        
                     # My Songs
                     elif (current_state == const.showMySongs):
                         print("wp")
@@ -118,7 +135,6 @@ def foundSong(db_tools,messenger, musixmatch, recipient_id, title, author, track
             messenger.send_message(recipient_id,text.noLyrics)
     else:
         messenger.send_message(recipient_id,text.noSong)
-    db_tools.updateConversationState(recipient_id,const.greeting)
 
 def returningVisitor(messenger,recipient_id):
     messenger.send_message(recipient_id,text.multipleTimes)
@@ -148,6 +164,10 @@ def updateState(db_tools,recipient_id,option):
         db_tools.updateConversationState(recipient_id,const.chatsReport)
     elif option == text.songsReport:
         db_tools.updateConversationState(recipient_id,const.songsReport)
+    elif option == text.yes:
+        db_tools.updateConversationState(recipient_id,const.yes)
+    elif option == text.no:
+        db_tools.updateConversationState(recipient_id,const.no)
 
 def getNumberOfUsers(db_tools,messenger,recipient_id):
     numberOfUser = db_tools.getNumberOfUsers()

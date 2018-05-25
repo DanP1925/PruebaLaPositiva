@@ -106,3 +106,13 @@ class DbLibrary:
         result = cur.fetchall()
         cur.close()
         return result
+
+    def updateFavoriteSong(self,facebook_id):
+        account_id = self.getAccountId(facebook_id)
+        cur = self.conn.cursor()
+        query = "UPDATE song SET is_favorite = 'Y' WHERE id = (select id from song where account_id = %s order by created_at desc limit 1)"
+        data = (account_id, )
+        cur.execute(query,data) 
+        self.conn.commit()
+        cur.close()
+

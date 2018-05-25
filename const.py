@@ -9,3 +9,6 @@ byLyric = 8
 personsReport = 9
 chatsReport = 10
 songReport = 11
+addFavorite = 12
+yes = 13
+no = 14
