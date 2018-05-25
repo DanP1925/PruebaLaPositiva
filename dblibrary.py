@@ -126,4 +126,12 @@ class DbLibrary:
         cur.close()
         return result
 
+    def getTopSongs(self):
+        cur = self.conn.cursor()
+        query = "SELECT count(track_id) as frec, title, author FROM song group by track_id, title, author order by frec desc limit 10"
+        cur.execute(query) 
+        result = cur.fetchall()
+        cur.close()
+        return result
+
 

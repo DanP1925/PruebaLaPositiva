@@ -105,7 +105,7 @@ def receive_message():
                     elif (current_state == const.chatsReport):
                         getChatsPerDay(db_tools,messenger,recipient_id)
                     elif (current_state == const.songReport):
-                        print("song")
+                        getTopSongs(db_tools,messenger,recipient_id)
 
 
                 db_tools.close()
@@ -163,7 +163,7 @@ def updateState(db_tools,recipient_id,option):
     elif option == text.chatsReport:
         db_tools.updateConversationState(recipient_id,const.chatsReport)
     elif option == text.songsReport:
-        db_tools.updateConversationState(recipient_id,const.songsReport)
+        db_tools.updateConversationState(recipient_id,const.songReport)
     elif option == text.yes:
         db_tools.updateConversationState(recipient_id,const.yes)
     elif option == text.no:
@@ -186,7 +186,16 @@ def showSongs(db_tools,messenger,recipient_id):
     mySongs = db_tools.getMyTopSongs(recipient_id)
     i = 1
     for song in mySongs:
-        fullMessage = str(i) + ". " + song[1] + song[2]
+        fullMessage = str(i) + ". " + song[1] + "-" + song[2]
+        messenger.send_message(recipient_id,fullMessage) 
+        i+=1
+    db_tools.updateConversationState(recipient_id,const.greeting)
+
+def getTopSongs(db_tools,messenger,recipient_id):
+    topSongs = db_tools.getTopSongs()
+    i = 1
+    for song in topSongs:
+        fullMessage = str(i) + ". " + song[1] + "-" + song[2]
         messenger.send_message(recipient_id,fullMessage) 
         i+=1
     db_tools.updateConversationState(recipient_id,const.greeting)
