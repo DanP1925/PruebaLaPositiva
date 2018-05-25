@@ -8,32 +8,43 @@ class MusixMatch:
     def getSongWithTitle(self,title):
         parameters = {"q_track": str(title),"apikey": self.api_key}
         response = requests.get("http://api.musixmatch.com/ws/1.1/track.search?page_size=1&page=1&s_track_rating=desc",params=parameters)
-        title = self.getTitleSong(response)
+        title = self.getTitle(response)
+        author = self.getAuthor(response)
         track_id = self.getTrackIdFromResponse(response)
-        return title, track_id
+        return title, author, track_id
 
     def getSongWithAuthor(self, artist):
         parameters = {"q_artist": str(artist),"apikey": self.api_key}
         response = requests.get("http://api.musixmatch.com/ws/1.1/track.search?page_size=1&page=1&s_track_rating=desc",params=parameters)
-        title = self.getTitleSong(response)
+        title = self.getTitle(response)
+        author = self.getAuthor(response)
         track_id = self.getTrackIdFromResponse(response)
-        return title, track_id
+        return title, author, track_id
 
     def getSongWithLyrics(self, lyrics):
         parameters = {"q_lyrics": str(lyrics),"apikey": self.api_key}
         response = requests.get("http://api.musixmatch.com/ws/1.1/track.search?page_size=1&page=1&s_track_rating=desc",params=parameters)
-        title = self.getTitleSong(response)
+        title = self.getTitle(response)
+        author = self.getAuthor(response)
         track_id = self.getTrackIdFromResponse(response)
-        return title, track_id
+        return title, author, track_id
 
-    def getTitleSong(self,response):
+    def getTitle(self,response):
         parsed = json.loads(response.content.decode('utf-8'))
         if (len(parsed['message']['body']['track_list']) != 0):
             title = parsed['message']['body']['track_list'][0]['track']['track_name']
-            author = parsed['message']['body']['track_list'][0]['track']['artist_name']
-            return (title + ' - ' + author)
+            return title
         else:
             return None
+
+    def getAuthor(self,response):
+        parsed = json.loads(response.content.decode('utf-8'))
+        if (len(parsed['message']['body']['track_list']) != 0):
+            author = parsed['message']['body']['track_list'][0]['track']['artist_name']
+            return author
+        else:
+            return None
+
 
     def getTrackIdFromResponse(self,response):
         parsed = json.loads(response.content.decode('utf-8'))

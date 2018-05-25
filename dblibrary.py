@@ -80,6 +80,17 @@ class DbLibrary:
         cur.close()
         return conversation_state
 
+    def storeSong(self,title, author, track_id, facebook_id,created_time):
+        account_id = self.getAccountId(facebook_id)
+        cur = self.conn.cursor()
+        query = "INSERT INTO song (account_id, track_id, title, author, created_at) VALUES (%s, %s, %s, %s, %s)"
+        data = (account_id, track_id,
+                title, author, self.convertFbTimestampToDate(created_time))
+        cur.execute(query,data) 
+        self.conn.commit()
+        cur.close()
+
+
     def getNumberOfUsers(self):
         cur = self.conn.cursor()
         query = "SELECT count(id) FROM account"

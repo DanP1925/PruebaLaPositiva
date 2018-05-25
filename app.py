@@ -33,24 +33,28 @@ def receive_message():
                                             recipient_id,timestamp)
                         else:
                             current_state = db_tools.getConversationState(recipient_id)
+                            # Search Song
                             if (current_state == const.findSong):
                                 askHowToFind(db_tools,messenger,recipient_id)
-                            elif (current_state == const.displayReport):
-                                askWhichReport(db_tools,messenger,recipient_id)
                             elif (current_state == const.byAuthor):
-                                title, track_id = musixmatch.getSongWithAuthor(messageText)
+                                title, author, track_id = musixmatch.getSongWithAuthor(messageText)
                                 foundSong(db_tools,messenger,musixmatch,
-                                        recipient_id,title,track_id)
+                                        recipient_id,title,author,track_id,timestamp)
                             elif (current_state == const.byTitle):
-                                title, track_id = musixmatch.getSongWithTitle(messageText)
+                                title, author, track_id = musixmatch.getSongWithTitle(messageText)
                                 foundSong(db_tools,messenger,musixmatch,
-                                        recipient_id,title,track_id)
+                                        recipient_id,title,author,track_id,timestamp)
                             elif (current_state == const.byLyric):
-                                title, track_id = musixmatch.getSongWithLyrics(messageText)
+                                title, author, track_id = musixmatch.getSongWithLyrics(messageText)
                                 foundSong(db_tools,messenger,musixmatch,
-                                        recipient_id,title,track_id)
+                                        recipient_id,title,author,track_id,timestamp)
+                            # My Songs
                             elif (current_state == const.showMySongs):
                                 print("wp")
+                            # Reports
+                            elif (current_state == const.displayReport):
+                                askWhichReport(db_tools,messenger,recipient_id)
+                            #Other
                             else:
                                 returningVisitor(messenger,recipient_id)
 
@@ -101,10 +105,11 @@ def askHowToFind(db_tools,messenger,recipient_id):
         [text.byAuthor,text.byTitle,text.byLyric])
     db_tools.updateConversationState(recipient_id,const.howToFind)
 
-def foundSong(db_tools,messenger, musixmatch, recipient_id, title, track_id):
+def foundSong(db_tools,messenger, musixmatch, recipient_id, title, author, track_id,timestamp):
     if title is not None:
         messenger.send_message(recipient_id,text.foundSong)
-        messenger.send_message(recipient_id,title)
+        messenger.send_message(recipient_id,title + ' ' + author)
+        db_tools.storeSong(title,author,track_id,recipient_id,timestamp)
         lyrics = musixmatch.getLyricsWithSong(track_id)
         if lyrics is not None:
             messenger.send_message(recipient_id,text.foundLyrics)
