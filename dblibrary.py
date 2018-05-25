@@ -63,3 +63,6 @@ class DbLibrary:
         cur.execute(query,data) 
         self.conn.commit()
         cur.close()
+
+    def updateConversationState(self, facebook_id, state):
+        account_id = self.getAccountId(facebook_id)
