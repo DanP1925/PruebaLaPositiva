@@ -1,5 +1,5 @@
-import psycopg2
 from datetime import datetime
+import psycopg2
 
 class DbLibrary:
 

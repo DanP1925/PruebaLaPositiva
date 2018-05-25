@@ -1,8 +1,8 @@
 from dblibrary import DbLibrary
-import text
 from flask import Flask, request
 from pymessenger.bot import Bot
 from pymessenger import Button
+import text
 
 app = Flask(__name__)
 ACCESS_TOKEN = 'EAAGXBJKgLyoBAAQiWhtEQwbwYP2VsWXtpNZBg87vsPoB7U9VU6ZB0748kUbKyiGs4GbZCiQvTSE6exxEUJBjIRwtUZBSZAeiB06KJXAc3tyul1MsQRZAmoL9TCRO3ayo1tnka6ReS0GN60TlxEQWUSX7lkrPLYbiaWBbj707ajpwZDZD'
@@ -30,8 +30,10 @@ def receive_message():
                             db_tools.createNewAccount(recipient_id,timestamp)
                         else:
                             send_message(recipient_id,text.multipleTimes)
-                            send_option_message(recipient_id,text.whatCanIDoForYou,
-                                                [text.findSong,text.displayMySongs])
+                        send_option_message(recipient_id,text.whatCanIDoForYou,
+                                            [text.findSong,
+                                            text.displayMySongs,
+                                            text.displayReport])
                         db_tools.storeMessage(recipient_id,messageText,timestamp)
                         db_tools.close()
                     if message['message'].get('attachments'):
