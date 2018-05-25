@@ -34,11 +34,14 @@ class DbLibrary:
         cur = self.conn.cursor()
         query = "INSERT INTO account (facebook_id,created_at,last_access) VALUES (%s, %s, %s)"
         data = (facebook_id,
-                datetime.fromtimestamp(created_time/1000.0),
-                datetime.fromtimestamp(created_time/1000.0)) 
+                self.convertFbTimestampToDate(created_time),
+                self.convertFbTimestampToDate(created_time)) 
         cur.execute(query,data) 
         self.conn.commit()
         cur.close()
+
+    def convertFbTimestampToDate(self,timestamp):
+        return datetime.fromtimestamp(timestamp/1000.0)
 
     def getAccountId(self, facebook_id):
         cur = self.conn.cursor()
@@ -56,7 +59,7 @@ class DbLibrary:
         query = "INSERT INTO message (account_id,body,send_at) VALUES (%s, %s, %s)"
         data = (account_id,
                 messageText,
-                datetime.fromtimestamp(created_time/1000.0))
+                self.convertFbTimestampToDate(created_time))
         cur.execute(query,data) 
         self.conn.commit()
         cur.close()
